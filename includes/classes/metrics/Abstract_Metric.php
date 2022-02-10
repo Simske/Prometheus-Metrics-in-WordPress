@@ -40,7 +40,7 @@ abstract class Abstract_Metric {
 		}
 		echo "# HELP $this->metric_name {$this->get_help_text()}\n";
 		echo "# TYPE $this->metric_name $this->type\n";
-		echo $this->metric_name . '{' . $this->get_metric_labels() . '} ' . $this->get_cached_metric_value() . "\n";
+		echo $this->metric_name . '{' . $this->get_metric_labels() . '} ' . $this->get_metric_value() . "\n";
 	}
 
 	public function get_metric_labels(): string {

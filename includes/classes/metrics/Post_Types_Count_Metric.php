@@ -13,15 +13,6 @@ class Post_Types_Count_Metric extends Abstract_Metric {
 			return;
 		}
 
-		$transientKey = 'prometheus-metrics-for-wp/' . $this->metric_name;
-		$value        = get_transient( $transientKey );
-
-		if ( $value ) {
-			echo $value;
-
-			return;
-		}
-
 		ob_start();
 
 		echo "# HELP $this->metric_name {$this->get_help_text()}\n";
@@ -37,20 +28,16 @@ class Post_Types_Count_Metric extends Abstract_Metric {
 
 		foreach ( $post_types as $post_type ) {
 			$counts = wp_count_posts( $post_type );
-			$time   = time() * 1000;
 			foreach ( get_object_vars( $counts ) as $post_status => $count ) {
 				if ( get_post_status_object( $post_status ) && $count > 0 ) {
-					echo $this->metric_name . '{' . $this->get_metric_labels() . ',post_type="' . $post_type . '",status="' . $post_status . '"} ' . $count . " " . $time . "\n";
+					echo $this->metric_name . '{' . $this->get_metric_labels() . ',post_type="' . $post_type . '",status="' . $post_status . '"} ' . $count . "\n";
 				}
 			}
 		}
 
 		$value   = ob_get_clean();
-		$timeout = apply_filters( 'prometheus-metrics-for-wp/timeout', 3600, $this->metric_name ); // 1h by default
-		set_transient( $transientKey, $value, $timeout );
 
 		echo $value;
-
 
 	}
 
